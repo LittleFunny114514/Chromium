@@ -1,12 +1,37 @@
 ﻿// Chromium 2.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
-
 import std;
 import Chromium;
-Chromium::Int<false, false> n1, n2;
+import Chromium.NN.LA;
+Chromium::Int<false, false> n1 = 114514, n2 = 1919810;
+#define time(expression,ret) { auto before = std::chrono::high_resolution_clock::now(); expression; \
+	ret = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - before).count(); }
+//*
 int main()
 {
-    std::cout << "Hello World!\n";
+
+	using namespace Chromium;
+	using std::cout, std::endl;
+	//test();
+	//*
+	size_t N = 4096;
+	Matrix<float>A(N), B(N), C(N), D(N);
+	double t;
+	time(A * B, t);
+	cout <<std::setprecision(15)<< t / 1E9;//*/
+	/*
+	Matrix<float>A(1024, 1024, 0), B(1024, 1024, 0), C;
+	for (float& num : A.dat)num = float(MathHelper::randUint()) / 0xFFFF;
+	for (float& num : B.dat)num = float(MathHelper::randUint()) / 0xFFFF;
+	long long t; time(A*B; , t)
+	cout << t/1E9;//*/
+	//std::cout << (n1*n2).hex();
+	/*Matrix<float>A(2, 3, 0), B(4, 2, 0), C;
+	int ni = 0;
+	for (float& num : A.dat)num = ++ni;
+	ni = 8;
+	for (float& num : B.dat)num = ni--;
+	cout << A.dat.toString() << endl << B.dat.toString() << endl << (A * B).dat.toString();*/
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
