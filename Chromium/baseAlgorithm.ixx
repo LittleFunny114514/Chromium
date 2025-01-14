@@ -36,9 +36,9 @@ export namespace Chromium
 	 * https://www.cnblogs.com/LzyRapx/p/9109496.html
 	 */
 	template <concepts::Ints saveT, concepts::Ints calcT, template <typename> typename arrT>
-	void NTT(arrT<saveT>& arr, bool inverse, calcT g, saveT mod)
+	void NTT(arrT<saveT>& arr, bool inverse, calcT g, calcT mod)
 	{
-		assert(arr.size() == MathHelper::least2expGeqN(arr.size()));
+		Assert(arr.size() == MathHelper::least2expGeqN(arr.size()));
 		for (size_t i = 0, j = 0; i < arr.size(); i++)
 		{
 			if (i < j)
@@ -140,7 +140,7 @@ export namespace Chromium
 		for (decltype(arr[0])& row : arr)
 			FFT<T>(row, inverse);
 		std::vector<T> col;
-		col.resize(arr.size());
+		col.resize(arr[0].size());
 		for (size_t j = 0; j < arr[0].size(); j++)
 		{
 			for (size_t i = 0; i < arr.size(); i++)

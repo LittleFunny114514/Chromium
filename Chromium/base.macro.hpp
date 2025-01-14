@@ -17,9 +17,12 @@
 // template<typename T>inline T max(const T& a, const T& b) { return (a > b) ? a : b; }
 // template<typename T>inline T min(const T& a, const T& b) { return (a < b) ? a : b; }
 #endif //_CR_MSVC_USED
-#include<climits>
+#include<limits.h>
+#include <assert.h>
+#define Assert assert
 #define comma ,
 #define empty
+#pragma warning(disable:5276)
 #define mkEmptyTag(name, super) \
 	class tag_##name super { };\
 	template <typename T>\

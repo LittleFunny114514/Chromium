@@ -418,7 +418,7 @@ export namespace Chromium
 		void divStandard(const Int & other, Int & quotient, Int & rem) const
 		{
 			using namespace std;
-			assert(other != 0);
+			Assert(other != 0);
 			rem = *this;
 			if (operator<(other))
 				return;

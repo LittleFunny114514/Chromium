@@ -1,10 +1,12 @@
 module;
 #include "base.macro.hpp"
 #include <cstdlib>
+
 export module Chromium.base;
 
 export import std;
 export import std.compat;
+export void Aassert(bool expression) { assert(expression); }
 export namespace Chromium
 {
 	namespace consts
@@ -52,8 +54,8 @@ export namespace Chromium
 		template <std::integral T>
 		inline size_t log2i(T n)
 		{
-			// static_assert(std::is_integral_v<T>, "Must be integer");
-			assert(n >= 0);
+			// static_Assert(std::is_integral_v<T>, "Must be integer");
+			Assert(n >= 0);
 			T ret = 0;
 			while (n >>= 1)
 				ret++;
