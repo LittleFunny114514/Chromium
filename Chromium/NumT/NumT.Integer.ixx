@@ -159,10 +159,10 @@ export namespace Chromium
 		/* 位运算 */
 		Int operator~() const
 		{
-			Int out = *this;
-			for (size_t i = 0; i < out.size(); i++)
-				out[i] = ~out[i];
-			return out;
+			Int outl = *this;
+			for (size_t i = 0; i < outl.size(); i++)
+				outl[i] = ~outl[i];
+			return outl;
 		}
 		template <concepts::hiInts IntT>
 		Int& operator&=(const IntT & other)
@@ -220,11 +220,11 @@ export namespace Chromium
 		mkOprWithConstruct(Int, |=, std::integral);
 		mkOprWithConstruct(Int, &=, std::integral);
 		mkOprWithConstruct(Int, ^=, std::integral);
-		mkOprWithOprAndAssign(Int, | , concepts::Ints);
-		mkOprWithOprAndAssign(Int, &, concepts::Ints);
-		mkOprWithOprAndAssign(Int, ^, concepts::Ints);
-		mkOprWithOprAndAssign(Int, << , std::integral);
-		mkOprWithOprAndAssign(Int, >> , std::integral);
+		mkOprWithOprAndAssignConcept(Int, | , concepts::Ints);
+		mkOprWithOprAndAssignConcept(Int, &, concepts::Ints);
+		mkOprWithOprAndAssignConcept(Int, ^, concepts::Ints);
+		mkOprWithOprAndAssignConcept(Int, << , std::integral);
+		mkOprWithOprAndAssignConcept(Int, >> , std::integral);
 
 		/* 比较 */
 		template <concepts::hiInts IntT>
@@ -297,8 +297,8 @@ export namespace Chromium
 			return *this;
 		}
 		inline Int operator-() const { return (~*this) += 1; }
-		mkOprWithOprAndAssign(Int, +, concepts::Ints);
-		mkOprWithOprAndAssign(Int, -, concepts::Ints);
+		mkOprWithOprAndAssignConcept(Int, +, concepts::Ints);
+		mkOprWithOprAndAssignConcept(Int, -, concepts::Ints);
 		mkOprWithConstruct(Int, +=, std::integral);
 		mkOprWithConstruct(Int, -=, std::integral);
 
@@ -413,7 +413,7 @@ export namespace Chromium
 				while (i < ret.size())ret[i++] = 0xFFFFFFFF;
 			return ret;
 		}
-		mkOprAndAssignWithOpr(Int, *, concepts::Ints);
+		mkOprAndAssignWithOprConcept(Int, *, concepts::Ints);
 		/* 最基本的除法，时间复杂度:O(size()*other.size()) */
 		void divStandard(const Int & other, Int & quotient, Int & rem) const
 		{
@@ -454,9 +454,9 @@ export namespace Chromium
 			return r;
 		}
 		mkOprWithConstruct(Int, / , std::integral);
-		mkOprAndAssignWithOpr(Int, / , concepts::Ints);
+		mkOprAndAssignWithOprConcept(Int, / , concepts::Ints);
 		mkOprWithConstruct(Int, %, std::integral);
-		mkOprAndAssignWithOpr(Int, %, concepts::Ints);
+		mkOprAndAssignWithOprConcept(Int, %, concepts::Ints);
 	};
 	template <concepts::hiInts IntT>
 	size_t log2i(const IntT& num)

@@ -21,7 +21,6 @@
 #include <assert.h>
 #define Assert assert
 #define comma ,
-#define empty
 #pragma warning(disable:5276)
 #define mkEmptyTag(name, super) \
 	class tag_##name super { };\

@@ -9,7 +9,12 @@ export namespace Chromium
 {
 	namespace concepts
 	{
-		mkTagWith(Real, empty, std::is_floating_point<T>::value);
+		template<typename T>
+		concept Arithmetic = requires(T a, T b)
+		{
+			a + b, a - b, a* b;
+		};
+		mkTagWith(Real, , std::is_floating_point<T>::value);
 	}
 	namespace mathc
 	{

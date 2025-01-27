@@ -10,13 +10,14 @@ export namespace Chromium
 		T x, y;
 		pos2(T X, T Y) :x(X), y(Y) {}
 	};
-	template <typename T>
+	template <typename T, template<typename>typename Alloc = std::allocator>
 	class array
 	{
+		bool ext_alloc = false;
+		Alloc<T> alloc;
 		T* _data = nullptr;
-		size_t _size = 0;
+		size_t __unused1, __unused2, _size = 0;
 		T cache[config::MAX_ARR_CACHE_SIZE] = { T() };
-		//typedef T(*GenFn)(size_t idx);
 	public:
 		array() {}
 		array(size_t Size, T fill = T()) { resize(Size, fill); }
@@ -28,7 +29,7 @@ export namespace Chromium
 			_size = init.size();
 			if (init.size() <= config::MAX_ARR_CACHE_SIZE)it = cache;
 			else
-				it = _data = new T[_size];
+				it = _data = alloc.allocate(_size);
 			for (const T& t : init)
 				*(it++) = t;
 		}
@@ -41,11 +42,11 @@ export namespace Chromium
 		array& resize(size_t newsize, T fill = T())
 		{
 			if (_data)
-				delete[] _data;
+				alloc.deallocate(_data, _size);
 			if (!newsize)
 				return _data = nullptr, _size = 0, *this;
 
-			_data = (newsize <= config::MAX_ARR_CACHE_SIZE ? 0 : new T[newsize]);
+			_data = (newsize <= config::MAX_ARR_CACHE_SIZE ? 0 : alloc.allocate(newsize));
 			_size = newsize;
 			T* it = begin(), * End = end();
 			while (it != End)
@@ -72,7 +73,8 @@ export namespace Chromium
 		inline const T* begin() const { return _data ? _data : cache; }
 		inline const T* end() const { return begin() + _size; }
 		inline size_t size() const { return _size; }
-		inline const T* data() const { return begin(); }
+		inline T* data() { return begin(); }
+		inline const T* data()const { return begin(); }
 
 		bool operator==(const array& other) const
 		{
@@ -88,15 +90,15 @@ export namespace Chromium
 		array& operator=(const array& other)
 		{
 			if (_data)
-				delete[] _data;
+				alloc.deallocate(_data, _size);
 			if (!other._size)
 				return _size = 0, _data = nullptr, *this;
-			_data = (other._size <= config::MAX_ARR_CACHE_SIZE ? 0 : new T[other._size]);
-			_size = other._size;
+			_data = (other._size <= config::MAX_ARR_CACHE_SIZE ? 0 : alloc.allocate(other._size));
+			_size = other._size, __unused1 = other.__unused1, __unused2 = other.__unused2;
 			T* it1 = begin(), * end1 = end();
 			const T* it2 = other.begin();
 			while (it1 != end1)
-				(*it1++) = (*it2++);
+				*(it1++) = *(it2++);
 			return *this;
 		}
 		std::string toString(std::string split = " ")
@@ -107,27 +109,48 @@ export namespace Chromium
 			return oss.str();
 		}
 	};
-	template<typename T>
+	template<typename T, template<typename>typename Alloc = std::allocator>
 	class array2d
 	{
-		T* _data = 0;
+		bool ext_alloc = false;
+		Alloc<T> alloc;
+		T* _data = nullptr;
 		size_t cx = 0, cy = 0, _size = 0;
 		T cache[config::MAX_ARR_CACHE_SIZE] = { T() };
 		//typedef T(*GenFn)(T);
 	public:
-		inline size_t width()const { return cx; }
-		inline size_t height()const { return cy; }
+		inline size_t cols()const { return cx; }
+		inline size_t rows()const { return cy; }
+		inline size_t size()const { return _size; }
 		array2d() {}
-		array2d(size_t width, size_t height) { resize(width, height); }
-		~array2d() {
-			if (_data)delete[] _data;
-		}
-		array2d& resize(size_t width, size_t height, T fill = T())
+		array2d(size_t cols, size_t rows) { resize(cols, rows); }
+		array2d(size_t cols, size_t rows, T* data) { inherit(cols, rows, data); }
+		array2d& operator=(const array2d& other)
 		{
-			if (_size)delete[] _data;
-			_size = (cx = width) * (cy = height);
+			if (!other._size)return resize(0, 0);
+			resize(other.cx, other.cy);
+			T* it1 = begin(), * end1 = end();
+			const T* it2 = other.begin();
+			while (it1 != end1)
+				*(it1++) = *(it2++);
+			return *this;
+		}
+		void inherit(size_t cols, size_t rows, T* data)
+		{
+			if (_data != nullptr && !ext_alloc)alloc.deallocate(_data, _size);
+			cx = cols, cy = rows, _size = cx * cy, ext_alloc = true, _data = data;
+		}
+		void deinherit() { Assert(ext_alloc); ext_alloc = false, _data = nullptr; }
+		~array2d() {
+			if (_data != nullptr && !ext_alloc)alloc.deallocate(_data, _size);
+		}
+		array2d& resize(size_t cols, size_t rows, T fill = T())
+		{
+			Assert(!ext_alloc);
+			if (_data != nullptr)alloc.deallocate(_data, _size);
+			_size = (cx = cols) * (cy = rows);
 			if (!_size)return _data = nullptr, *this;
-			_data = (_size <= config::MAX_ARR_CACHE_SIZE ? 0 : new T[_size]);
+			_data = (_size <= config::MAX_ARR_CACHE_SIZE ? 0 : alloc.allocate(_size));
 			T* it = begin(), * End = end();
 			while (it != End)
 				*(it++) = fill;

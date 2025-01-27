@@ -6,13 +6,11 @@ export module Chromium.base;
 
 export import std;
 export import std.compat;
-export void Aassert(bool expression) { assert(expression); }
+// export void Assert(bool expression) { assert(expression); }
 export namespace Chromium
 {
 	namespace consts
 	{
-		const bool POSITIVE = 0;
-		const bool NEGATIVE = 1;
 		const double dpi = 3.1415926535897932;
 		const long double ldPi = static_cast<long double>(3.1415926535897932384626);
 	}
@@ -32,9 +30,26 @@ export namespace Chromium
 	}
 	namespace concepts
 	{
-		mkConcept1Type(size_t);
+		template<template<typename>typename TCon>
+		concept Container = requires(TCon<int> con)
+		{
+			con.begin(), con.end();
+		};
+	}
+	template<typename T>
+	void fill(T* dst, size_t cnt, const T& val)
+	{
+		for (; cnt--; dst++)*dst = val;
 	}
 	namespace MathHelper {
+		template<typename T>
+		requires std::integral<T>|| std::is_floating_point<T>::value
+		T clamp(T x, T min, T max)
+		{
+			if (x < min)return min;
+			if (x > max)return max;
+			return x;
+		}
 		template <std::integral T>
 		T least2expGeqN(T n)
 		{

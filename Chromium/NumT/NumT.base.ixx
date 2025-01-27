@@ -9,7 +9,7 @@ export namespace Chromium
 {
 	namespace concepts
 	{
-		mkEmptyTag(hiInt, empty);
+		mkEmptyTag(hiInt, );
 		template <typename T>
 		concept Ints = hiInts<T> || std::integral<T>;
 		mkEmptyTag(CR_complex,);
